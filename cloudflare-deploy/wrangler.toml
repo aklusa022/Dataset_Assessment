@@ -1,0 +1,20 @@
+name = "stewardiq-api"
+main = "src/index.ts"
+compatibility_date = "2025-06-24"
+
+[[containers]]
+class_name = "DotNetApi"
+image = "../backend/Dockerfile"
+max_instances = 3
+
+[[durable_objects.bindings]]
+class_name = "DotNetApi"
+name = "DOTNET_API"
+
+[[migrations]]
+new_sqlite_classes = ["DotNetApi"]
+tag = "v1"
+
+[[routes]]
+pattern = "stewardiqapi.alexander-klusa.me"
+custom_domain = true

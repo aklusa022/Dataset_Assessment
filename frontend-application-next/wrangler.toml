@@ -1,0 +1,16 @@
+name = "stewardiq-frontend"
+compatibility_date = "2025-06-24"
+compatibility_flags = ["nodejs_compat"]
+main = ".open-next/worker.js"
+assets = { directory = ".open-next/assets", binding = "ASSETS" }
+
+[[routes]]
+pattern = "stewardiq.alexander-klusa.me"
+custom_domain = true
+
+[[services]]
+binding = "STEWARDIQ_API"
+service = "stewardiq-api"
+
+[vars]
+LOCAL_DEPLOYMENT = "0"
