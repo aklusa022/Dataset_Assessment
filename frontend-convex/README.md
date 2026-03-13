@@ -171,4 +171,4 @@ All items from the StewardIQ assessment are implemented in this version as well.
 
 ## AI Usage
 
-This project was built with Claude Code (Opus 4.6). Claude was used to scaffold the Next.js project, set up the Convex schema and functions, integrate the `useQuery` and `useMutation` hooks, and configure the Cloudflare Workers deployments. Code quality was verified by me
+This project was built with Claude Code (Opus 4.6). Claude was used to scaffold the Next.js project, set up the Convex schema and functions, integrate the `useQuery` and `useMutation` hooks, and configure the Cloudflare Workers deployments. Code quality was verified manually.
