@@ -134,7 +134,7 @@ No service binding needed — the browser connects to Convex directly via WebSoc
 
 ## Tech Stack
 
-| Layer | .NET Version | Convex Version |
+| Layer | .NET + Next Stack | Convex + Next Stack |
 |---|---|---|
 | Frontend | Next.js 16, HeroUI v3, Tailwind CSS v4 | Same |
 | Backend | .NET 10 (in-memory, no persistence) | Convex (persistent, real-time) |
