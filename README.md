@@ -35,7 +35,9 @@ Two frontend implementations are provided — one backed by a .NET API, and one 
     └── wrangler.toml               Container config (stewardiqapi.alexander-klusa.me)
 ```
 
-## Quick Start
+# Quick Start
+
+## Local Deployment
 
 ### Option A: Next.js + .NET (local)
 
