@@ -53,7 +53,7 @@ npm install && npm run dev
 
 Open `http://localhost:3000`.
 
-### Option B: Convex backend (local)
+### Option B (Alternative Backend): Convex (local)
 
 ```bash
 # Terminal 1 — start Convex dev server to begin setup
@@ -66,6 +66,7 @@ cd frontend-convex && npm run dev
 ```
 
 Open `http://localhost:3000`.
+- [More indepth info](frontend-convex/README.md) — Convex version, real-time architecture, deployment
 
 ## Cloudflare Deployment
 
