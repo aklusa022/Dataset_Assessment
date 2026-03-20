@@ -15,11 +15,27 @@ public class DatasetsController : ControllerBase
         return Ok(_datasets);
     }
 
-    // [HttpPost]
-    // public ActionResult<Dataset> Create(Dataset dataset)
-    // {
-    //     _datasets.Add(dataset);
-    //     Console.WriteLine(dataset.Domain + " \n"+ dataset.Name+" \n"+ dataset.Id);
-    //     return CreatedAtAction(nameof(GetAll), new { id = dataset.Id }, dataset);
-    // }
+    [HttpPost]
+    public ActionResult<Dataset> Create(Dataset dataset)
+    {
+        _datasets.Add(dataset);
+        return CreatedAtAction(nameof(GetAll), new { id = dataset.Id }, dataset);
+    }
+
+    [HttpPut("{id}")]
+    public ActionResult<Dataset> Update(string id, Dataset dataset)
+    {
+        var existing = _datasets.FirstOrDefault(d => d.Id == id);
+        if (existing is null)
+            return NotFound();
+
+        existing.Name = dataset.Name;
+        existing.Domain = dataset.Domain;
+        existing.Owner = dataset.Owner;
+        existing.QualityScore = dataset.QualityScore;
+        existing.Status = dataset.Status;
+        existing.Details = dataset.Details;
+
+        return Ok(existing);
+    }
 }

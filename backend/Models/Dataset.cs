@@ -8,4 +8,6 @@ public class Dataset
     public string Owner { get; set; } = string.Empty;
     public int QualityScore { get; set; }
     public string Status { get; set; } = string.Empty;
+    public string Details {get;set;} = string.Empty;
+
 }

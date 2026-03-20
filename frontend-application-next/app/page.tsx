@@ -1,24 +1,21 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Button, toast } from "@heroui/react";
 import type { Dataset } from "./types";
+import { useDatasets } from "./hooks/useDatasets";
 import { DatasetTable } from "./components/DatasetTable";
 import { CreateDatasetModal } from "./components/CreateDatasetModal";
+import { EditDatasetModal } from "./components/EditDatasetModal";
 import { Filters } from "./components/Filters";
 
 export default function Home() {
-  const [datasets, setDatasets] = useState<Dataset[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { datasets, isLoading, createDataset, updateDataset } = useDatasets();
+
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingDataset, setEditingDataset] = useState<Dataset | null>(null);
   const [domainFilter, setDomainFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-
-  useEffect(() => {
-    fetch("/api/datasets")
-      .then((res) => res.json())
-      .then((data) => setDatasets(data as Dataset[]))
-      .catch(console.error);
-  }, []);
 
   const uniqueDomains = useMemo(
     () => [...new Set(datasets.map((d) => d.domain))],
@@ -26,28 +23,29 @@ export default function Home() {
   );
 
   const filteredDatasets = useMemo(() => {
-    return datasets.filter((d: any) => {
+    return datasets.filter((d) => {
       const matchesDomain = !domainFilter || d.domain === domainFilter;
       const matchesStatus = !statusFilter || d.status === statusFilter;
       return matchesDomain && matchesStatus;
     });
   }, [datasets, domainFilter, statusFilter]);
 
-  const handleCreate = (dataset: Omit<Dataset, "id">) => {
-    const newDataset: Dataset = {
-      ...dataset,
-      id: crypto.randomUUID(),
-    };
-    setDatasets((prev) => [...prev, newDataset]);
-    toast.success("Dataset created successfully");
+  const handleCreate = async (dataset: Omit<Dataset, "id">) => {
+    try {
+      await createDataset(dataset);
+      toast.success("Dataset created successfully");
+    } catch {
+      toast.danger("Failed to create dataset. Please try again.");
+    }
   };
 
-  const handleDomainChange = (value: string) => {
-    setDomainFilter(value === "__all" ? "" : value);
-  };
-
-  const handleStatusChange = (value: string) => {
-    setStatusFilter(value === "__all" ? "" : value);
+  const handleUpdate = async (dataset: Dataset) => {
+    try {
+      await updateDataset(dataset);
+      toast.success("Dataset updated successfully");
+    } catch {
+      toast.danger("Failed to update dataset. Please try again.");
+    }
   };
 
   return (
@@ -66,29 +64,41 @@ export default function Home() {
               Monitor and manage your organization&apos;s data assets
             </p>
           </div>
-          <Button onPress={() => setIsModalOpen(true)}>
-            + New Dataset
-          </Button>
+          <Button onPress={() => setIsCreateModalOpen(true)}>+ New Dataset</Button>
         </header>
 
         {/* Filters */}
         <Filters
           domains={uniqueDomains}
           domainFilter={domainFilter}
-          onDomainChange={handleDomainChange}
+          onDomainChange={(v) => setDomainFilter(v === "__all" ? "" : v)}
           statusFilter={statusFilter}
-          onStatusChange={handleStatusChange}
+          onStatusChange={(v) => setStatusFilter(v === "__all" ? "" : v)}
         />
 
         {/* Table */}
-        <DatasetTable datasets={filteredDatasets} />
+        <DatasetTable
+          datasets={filteredDatasets}
+          isLoading={isLoading}
+          onEdit={(ds) => setEditingDataset(ds)}
+        />
       </div>
 
       <CreateDatasetModal
-        isOpen={isModalOpen}
-        onOpenChange={setIsModalOpen}
+        isOpen={isCreateModalOpen}
+        onOpenChange={setIsCreateModalOpen}
         onSubmit={handleCreate}
       />
+
+      {editingDataset && (
+        <EditDatasetModal
+          key={editingDataset.id}
+          isOpen
+          onOpenChange={(open) => { if (!open) setEditingDataset(null); }}
+          onSubmit={handleUpdate}
+          dataset={editingDataset}
+        />
+      )}
     </div>
   );
 }

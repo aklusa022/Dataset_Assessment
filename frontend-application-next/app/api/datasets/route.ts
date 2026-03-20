@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 const LOCAL_API = "http://localhost:5090";
-const isLocal = process.env.LOCAL_DEPLOYMENT === "1";
+const isLocal = (process.env.LOCAL_DEPLOYMENT as string) === "1";
 
 
 
@@ -41,9 +41,18 @@ export async function GET() {
   return NextResponse.json(data);
 }
 
-// export async function POST(request: NextRequest) {
-//   const body = await request.json();
-//   const response = await fetchDatasets("POST", "/api/datasets", JSON.stringify(body));
-//   const data = await response.json();
-//   return NextResponse.json(data, { status: response.status });
-// }
+export async function POST(request: NextRequest) {
+  const body = await request.json();
+  const response = await fetchDatasets("POST", "/api/datasets", JSON.stringify(body));
+  const data = await response.json();
+  console.log(JSON.stringify(data));
+  return NextResponse.json(data, { status: response.status });
+}
+
+export async function PUT(request: NextRequest) {
+  const body = (await request.json()) as { id: string };
+  const response = await fetchDatasets("PUT", `/api/datasets/${body.id}`, JSON.stringify(body));
+  const data = await response.json();
+  console.log(JSON.stringify(data));
+  return NextResponse.json(data, { status: response.status });
+}

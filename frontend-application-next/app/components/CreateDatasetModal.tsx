@@ -1,16 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import {
-  Modal,
-  Button,
-  TextField,
-  Label,
-  Input,
-  Select,
-  ListBox,
-  Slider,
-} from "@heroui/react";
+import { useState, useCallback } from "react";
+import { Modal, Button, TextField, Label, Input, Select, ListBox, Slider } from "@heroui/react";
 import type { Dataset, Status } from "../types";
 import { DOMAINS, STATUSES } from "../types";
 
@@ -20,53 +11,54 @@ interface CreateDatasetModalProps {
   onSubmit: (dataset: Omit<Dataset, "id">) => void;
 }
 
-export function CreateDatasetModal({
-  isOpen,
-  onOpenChange,
-  onSubmit,
-}: CreateDatasetModalProps) {
-  const [name, setName] = useState("");
-  const [domain, setDomain] = useState<string>("");
-  const [owner, setOwner] = useState("");
-  const [qualityScore, setQualityScore] = useState(75);
-  const [status, setStatus] = useState<string>("Approved");
+const INITIAL_STATE = {
+  name: "",
+  domain: "",
+  owner: "",
+  qualityScore: 75,
+  status: "Approved" as string,
+  details: "" as string,
+};
 
-  const canSubmit = name.trim() && domain && owner.trim() && status;
+export function CreateDatasetModal({ isOpen, onOpenChange, onSubmit }: CreateDatasetModalProps) {
+  const [form, setForm] = useState(INITIAL_STATE);
+
+  const updateField = useCallback(
+    <K extends keyof typeof INITIAL_STATE>(key: K, value: (typeof INITIAL_STATE)[K]) => {
+      setForm((prev) => ({ ...prev, [key]: value }));
+    },
+    []
+  );
+
+  const canSubmit = form.name.trim() && form.domain && form.owner.trim() && form.status;
 
   const handleSubmit = () => {
     if (!canSubmit) return;
     onSubmit({
-      name: name.trim(),
-      domain,
-      owner: owner.trim(),
-      qualityScore,
-      status: status as Status,
+      name: form.name.trim(),
+      domain: form.domain,
+      owner: form.owner.trim(),
+      qualityScore: form.qualityScore,
+      status: form.status as Status,
+      details: "" as string,
     });
     onOpenChange(false);
-    // Reset form
-    setName("");
-    setDomain("");
-    setOwner("");
-    setQualityScore(75);
-    setStatus("Approved");
+    setForm(INITIAL_STATE);
   };
 
   const scoreColor =
-    qualityScore >= 80
+    form.qualityScore >= 80
       ? "text-[var(--success)]"
-      : qualityScore >= 60
+      : form.qualityScore >= 60
         ? "text-[var(--warning)]"
         : "text-[var(--danger)]";
 
   return (
-    <Modal.Backdrop
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      className="modal-backdrop"
-    >
+    <Modal.Backdrop isOpen={isOpen} onOpenChange={onOpenChange} className="modal-backdrop">
       <Modal.Container placement="auto">
         <Modal.Dialog className="sm:max-w-lg">
           <Modal.CloseTrigger />
+
           <Modal.Header>
             <Modal.Heading className="font-[family-name:var(--font-space-grotesk)] text-lg font-bold tracking-tight">
               Create New Dataset
@@ -75,23 +67,18 @@ export function CreateDatasetModal({
 
           <Modal.Body className="flex flex-col gap-5 p-5">
             {/* Name */}
-            <TextField
-              isRequired
-              name="name"
-              value={name}
-              onChange={setName}
-            >
+            <TextField isRequired name="name" value={form.name} onChange={(v) => updateField("name", v)}>
               <Label>Dataset Name</Label>
               <Input placeholder="e.g., Customer Transactions Q4" />
             </TextField>
 
-            {/* Domain + Status row */}
+            {/* Domain + Status */}
             <div className="grid grid-cols-2 gap-4">
               <Select
                 aria-label="Domain"
                 placeholder="Select domain"
-                selectedKey={domain || null}
-                onSelectionChange={(key) => setDomain(key ? String(key) : "")}
+                selectedKey={form.domain || null}
+                onSelectionChange={(key) => updateField("domain", key ? String(key) : "")}
               >
                 <Label>Domain</Label>
                 <Select.Trigger>
@@ -113,8 +100,8 @@ export function CreateDatasetModal({
               <Select
                 aria-label="Status"
                 placeholder="Select status"
-                selectedKey={status || null}
-                onSelectionChange={(key) => setStatus(key ? String(key) : "")}
+                selectedKey={form.status || null}
+                onSelectionChange={(key) => updateField("status", key ? String(key) : "")}
               >
                 <Label>Status</Label>
                 <Select.Trigger>
@@ -135,30 +122,26 @@ export function CreateDatasetModal({
             </div>
 
             {/* Owner */}
-            <TextField
-              isRequired
-              name="owner"
-              type="email"
-              value={owner}
-              onChange={setOwner}
-            >
+            <TextField isRequired name="owner" type="email" value={form.owner} onChange={(v) => updateField("owner", v)}>
               <Label>Owner (Email)</Label>
               <Input placeholder="owner@company.com" />
             </TextField>
 
-            {/* Quality Score Slider */}
+            {/* Quality Score */}
             <div>
               <Slider
                 minValue={0}
                 maxValue={100}
                 step={1}
-                value={qualityScore}
-                onChange={(v) => setQualityScore(v as number)}
+                value={form.qualityScore}
+                onChange={(v) => updateField("qualityScore", v as number)}
                 className="slider"
               >
                 <div className="flex items-center justify-between">
                   <Label>Quality Score</Label>
-                  <Slider.Output className={`font-[family-name:var(--font-geist-mono)] text-sm font-bold tabular-nums ${scoreColor}`} />
+                  <Slider.Output
+                    className={`font-[family-name:var(--font-geist-mono)] text-sm font-bold tabular-nums ${scoreColor}`}
+                  />
                 </div>
                 <Slider.Track>
                   <Slider.Fill />

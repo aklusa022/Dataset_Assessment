@@ -83,7 +83,7 @@ On Cloudflare, the service binding means the Next.js Worker and the .NET contain
 ### Prerequisites
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
-- Node.js 20+
+- Node.js 22+
 
 ### 1. Start the backend
 

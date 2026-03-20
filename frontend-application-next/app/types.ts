@@ -7,6 +7,7 @@ export interface Dataset {
   owner: string;
   qualityScore: number;
   status: Status;
+  details: string;
 }
 
 export const DOMAINS = ["Sales", "HR", "Finance", "Marketing", "Engineering"] as const;
